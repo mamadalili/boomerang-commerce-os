@@ -1,0 +1,32 @@
+import { test, expect } from 'bun:test';
+import { mkdtemp } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { openDatabase } from '../src/infrastructure/sqlite/database.js';
+import { migrate } from '../src/infrastructure/sqlite/migrate.js';
+import { seedDevelopment } from '../src/infrastructure/sqlite/seed.js';
+import { createStores } from '../src/infrastructure/sqlite/stores.js';
+import { createSourceService } from '../src/modules/sources/source-service.js';
+import { createPromptService } from '../src/modules/prompts/prompt-service.js';
+import { createStudioQueries } from '../src/application/studio-queries.js';
+import { createServer } from '../src/server.js';
+
+test('C4 APIs configure versioned sources and prompt versions without source edits', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'c4-api-'));
+  const db = openDatabase(join(dir, 'test.sqlite'));
+  migrate(db); seedDevelopment(db);
+  const stores = createStores(db);
+  const sourceService = createSourceService({ db, stores });
+  const promptService = createPromptService({ db, stores });
+  const server = createServer({ stores, sourceService, promptService, queries: createStudioQueries({ stores }), publicDir: new URL('../public/', import.meta.url) });
+  const sourceResponse = await fetch(`${server.url.origin}/api/sources`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'PRICE', name: 'لیست قیمت مصوب', version: '1405-07', location: 'file://approved-price.xlsx', operatingContext: 'default', freshnessPolicyVersion: 'price-v1', freshnessPolicy: { mode: 'valid_until_next_version' }, dataMode: 'AUTHORITATIVE' }) });
+  expect(sourceResponse.status).toBe(201);
+  expect(await sourceResponse.json()).toMatchObject({ kind: 'PRICE', data_mode: 'AUTHORITATIVE', freshness_policy_version: 'price-v1' });
+  const invalid = await fetch(`${server.url.origin}/api/sources`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'INVENTORY' }) });
+  expect(invalid.status).toBe(400);
+  const promptResponse = await fetch(`${server.url.origin}/api/prompts/product:seo_package/versions`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ content: 'SEO برای {{product_name}}', variables: ['product_name'], settings: { locale: 'fa-IR' } }) });
+  expect(promptResponse.status).toBe(201);
+  const prompt = await (await fetch(`${server.url.origin}/api/prompts/product:seo_package`)).json();
+  expect(JSON.parse(prompt.versions[0].variables)).toEqual(['product_name']);
+  server.stop(true); db.close();
+}, 30000);

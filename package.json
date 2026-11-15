@@ -1,0 +1,21 @@
+{
+  "name": "boomerang-commerce-os",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.2"
+  },
+  "scripts": {
+    "start": "bun run src/index.js",
+    "test": "bun test",
+    "migrate": "bun run src/cli/migrate.js",
+    "seed": "bun run src/cli/seed.js"
+  },
+  "dependencies": {
+    "read-excel-file": "^9.3.10"
+  },
+  "devDependencies": {
+    "fflate": "^0.8.3"
+  }
+}

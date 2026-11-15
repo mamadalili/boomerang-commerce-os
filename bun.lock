@@ -1,0 +1,30 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "boomerang-commerce-os",
+      "dependencies": {
+        "read-excel-file": "^9.3.10",
+      },
+      "devDependencies": {
+        "fflate": "^0.8.3",
+      },
+    },
+  },
+  "packages": {
+    "fflate": ["fflate@0.8.3", "", {}, "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="],
+
+    "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
+
+    "node-int64": ["node-int64@0.4.0", "", {}, "sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw=="],
+
+    "read-excel-file": ["read-excel-file@9.3.10", "", { "dependencies": { "fflate": "^0.8.3", "saxen": "^11.1.0", "unzipper-esm": "^0.13.3", "worker-f": "^0.1.12" } }, "sha512-zFcBdzunLCGBmLRT4Q3mLPJnhKPAXXfGAZ83feODlEqX2aRUbgF1h/n2oY0UF7I8tVwnJNRas6fTRD5veDUs+g=="],
+
+    "saxen": ["saxen@11.2.0", "", {}, "sha512-2bG564AAJcm/3vyZC0Uhs/mACrH+4AHMaKHKAB2M5xMqomUZa27FQ7MYaQGFKVcJk/MVzSEQ34A8QZWW+eiWEw=="],
+
+    "unzipper-esm": ["unzipper-esm@0.13.3", "", { "dependencies": { "graceful-fs": "^4.2.2", "node-int64": "^0.4.0" } }, "sha512-LUO6VZ6fCzkDbdMev0/fOhoIeVGKaOkTIOoYxVLE0SQjfvmAHK+oywl7lfhloSZIsdGJ25mJ18Mtd9CyTASjrA=="],
+
+    "worker-f": ["worker-f@0.1.20", "", {}, "sha512-7z5K5z4x++FykhpDTfriT/dOu7CmSap9BBv38DVFU3CD38obopq+DoFH75yBV3butpGm+OeqR9BKdSvYJSnUfQ=="],
+  }
+}

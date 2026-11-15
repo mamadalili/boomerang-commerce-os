@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boomerang Automation Studio</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/workspace.css"><link rel="stylesheet" href="/library.css"></head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#today"><span class="brand-mark">B</span><span><strong>Boomerang</strong><small>Automation Studio</small></span></a>
+    <nav aria-label="ناوبری اصلی">
+      <a href="#today" data-route="today">امروز</a>
+      <p>استودیو</p><a href="#automations" data-route="automations">اتوماسیون‌ها</a><a href="#runs" data-route="runs">اجراها</a><a href="#approvals" data-route="approvals">نیازمند تأیید</a>
+      <p>کار</p><a href="#products" data-route="products">محصولات</a><a href="#publishing" data-route="publishing">انتشار</a>
+      <p>کتابخانه</p><a href="#assets" data-route="assets">فایل‌ها / Assets</a><a href="#sources" data-route="sources">منابع داده</a><a href="#prompts" data-route="prompts">Prompt Studio</a>
+      <p>هوشمندی پروژه</p><a href="#intelligence" data-route="intelligence">نقشه پروژه / Graphify</a>
+      <a href="#settings" data-route="settings">تنظیمات</a>
+    </nav>
+    <div class="environment"><i></i> DEVELOPMENT · داده غیرتولیدی</div>
+  </aside>
+  <main>
+    <header class="topbar"><div><span class="eyebrow">AUTOMATION OPERATIONS STUDIO</span><h1 id="page-title">امروز</h1></div><button class="primary" id="new-run">+ اجرای اتوماسیون</button></header>
+    <section id="content" aria-live="polite"></section>
+  </main>
+</div>
+<dialog id="automation-dialog" aria-labelledby="dialog-title">
+  <form method="dialog" class="dialog-shell"><div class="panel-head"><div><span class="eyebrow">ساخت / بهبود محصول</span><h2 id="dialog-title">اجرای جدید</h2></div><button value="cancel" class="icon-button" aria-label="بستن">×</button></div>
+    <p class="dialog-intro">نام محصول را بنویسید؛ اگر فایل منبع دارید، همین‌جا اضافه کنید.</p>
+    <label class="field">نام محصول<input id="product-name" name="productName" placeholder="مثال: TORINO" autocomplete="off" required></label>
+    <label class="field">فایل منبع (اختیاری؛ ‎.md یا ‎.xlsx)<input id="source-file" name="sourceFile" type="file" accept=".md,.xlsx"></label>
+    <p class="dialog-note">فایل ثبت می‌شود، اما قیمت و موجودی تا بررسی منبع، تأییدشده محسوب نمی‌شوند.</p>
+    <p id="dialog-error" class="form-error" role="alert"></p><button type="button" class="primary wide" id="start-run">شروع اجرا</button>
+  </form>
+</dialog>
+<script type="module" src="/app.js"></script>
+</body></html>

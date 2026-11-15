@@ -1,0 +1,33 @@
+import { test, expect } from 'bun:test';
+import { mkdtemp } from 'node:fs/promises';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { openDatabase } from '../src/infrastructure/sqlite/database.js';
+import { migrate } from '../src/infrastructure/sqlite/migrate.js';
+import { createStores } from '../src/infrastructure/sqlite/stores.js';
+import { createProductAutomationService } from '../src/application/product-automation.js';
+import { createStudioQueries } from '../src/application/studio-queries.js';
+import { createExecutionKernel } from '../src/modules/execution/execution-kernel.js';
+import { createServer } from '../src/server.js';
+
+test('execution API applies legal transitions and exposes persisted history', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'execution-api-'));
+  const db = openDatabase(join(dir, 'test.sqlite'));
+  migrate(db);
+  const stores = createStores(db);
+  const automation = createProductAutomationService({ db, stores });
+  const execution = createExecutionKernel({ db, stores });
+  const queries = createStudioQueries({ stores });
+  const server = createServer({ stores, automation, execution, queries, publicDir: new URL('../public/', import.meta.url) });
+  const created = automation.start({ productName: 'TORINO', actor: 'admin' });
+  const resolution = stores.jobs.graph(created.jobId).steps.find(step => step.name === 'Product Resolution');
+  const endpoint = `${server.url.origin}/api/runs/${created.jobId}/steps/${resolution.id}/transitions`;
+  expect((await fetch(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ toStatus: 'SUCCEEDED' }) })).status).toBe(409);
+  expect((await fetch(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ toStatus: 'RUNNING' }) })).status).toBe(200);
+  expect((await fetch(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ toStatus: 'SUCCEEDED', evidenceReference: 'resolver://TORINO' }) })).status).toBe(200);
+  const history = await (await fetch(endpoint)).json();
+  expect(history.map(item => item.to_status)).toEqual(['RUNNING', 'SUCCEEDED']);
+  expect((await (await fetch(`${server.url.origin}/api/runs/${created.jobId}`)).json()).steps.find(step => step.id === resolution.id).status).toBe('SUCCEEDED');
+  server.stop(true);
+  db.close();
+}, 30000);

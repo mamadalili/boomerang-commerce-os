@@ -1,0 +1,1 @@
+import { loadConfig } from '../config.js';import { openDatabase } from '../infrastructure/sqlite/database.js';import { migrate } from '../infrastructure/sqlite/migrate.js';import { seedDevelopment } from '../infrastructure/sqlite/seed.js';const db=openDatabase(loadConfig().databasePath);migrate(db);seedDevelopment(db);db.close();console.log('development seed applied');
